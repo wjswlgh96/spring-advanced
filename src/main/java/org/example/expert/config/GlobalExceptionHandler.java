@@ -1,5 +1,6 @@
 package org.example.expert.config;
 
+import org.example.expert.domain.auth.exception.AdminException;
 import org.example.expert.domain.auth.exception.AuthException;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.common.exception.ServerException;
@@ -23,6 +24,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<Map<String, Object>> handleAuthException(AuthException ex) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
+        return getErrorResponse(status, ex.getMessage());
+    }
+
+    @ExceptionHandler(AdminException.class)
+    public ResponseEntity<Map<String, Object>> handleAdminException(AdminException ex) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
         return getErrorResponse(status, ex.getMessage());
     }
 
