@@ -1,0 +1,9 @@
+logging:
+  level:
+    org.hibernate.sql: debug
+    org.springframework.jdbc: debug
+
+jwt:
+  secret:
+    key: YS1zdHJpbmctc2VjcmV0LWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmc=
+

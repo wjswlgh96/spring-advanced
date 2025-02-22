@@ -40,26 +40,25 @@ public class CommentService {
         Comment savedComment = commentRepository.save(newComment);
 
         return new CommentSaveResponse(
-                savedComment.getId(),
-                savedComment.getContents(),
+                newComment.getId(),
+                newComment.getContents(),
                 new UserResponse(user.getId(), user.getEmail())
         );
     }
 
     @Transactional(readOnly = true)
     public List<CommentResponse> getComments(long todoId) {
-        List<Comment> commentList = commentRepository.findByTodoIdWithUser(todoId);
-
-        List<CommentResponse> dtoList = new ArrayList<>();
-        for (Comment comment : commentList) {
-            User user = comment.getUser();
-            CommentResponse dto = new CommentResponse(
-                    comment.getId(),
-                    comment.getContents(),
-                    new UserResponse(user.getId(), user.getEmail())
-            );
-            dtoList.add(dto);
-        }
-        return dtoList;
+        // 단순 stream으로 리팩토링
+        return commentRepository.findByTodoIdWithUser(todoId)
+                .stream()
+                .map((comment) -> {
+                    User user = comment.getUser();
+                    return new CommentResponse(
+                            comment.getId(),
+                            comment.getContents(),
+                            new UserResponse(user.getId(), user.getEmail())
+                    );
+                })
+                .toList();
     }
 }
