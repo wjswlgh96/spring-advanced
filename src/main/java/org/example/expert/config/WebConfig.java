@@ -22,8 +22,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(jwtUtil))
+        registry.addInterceptor(new JwtInterceptor(jwtUtil))
                 .order(1)
-                .addPathPatterns("/admin/**");
+                .addPathPatterns("/**")
+                .excludePathPatterns("/css/**", "/js/**", "/images/**", "/webjars/**");
     }
 }
