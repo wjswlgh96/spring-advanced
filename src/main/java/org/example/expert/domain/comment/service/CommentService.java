@@ -37,7 +37,7 @@ public class CommentService {
                 todo
         );
 
-        Comment savedComment = commentRepository.save(newComment);
+        commentRepository.save(newComment);
 
         return new CommentSaveResponse(
                 newComment.getId(),

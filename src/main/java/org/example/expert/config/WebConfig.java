@@ -1,6 +1,6 @@
 package org.example.expert.config;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -9,10 +9,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
-@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private final JwtUtil jwtUtil;
+    @Bean
+    public JwtUtil jwtUtil() {
+        return new JwtUtil();
+    }
 
     // ArgumentResolver 등록
     @Override
@@ -22,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new JwtInterceptor(jwtUtil))
+        registry.addInterceptor(new JwtInterceptor(jwtUtil()))
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**", "/js/**", "/images/**", "/webjars/**");

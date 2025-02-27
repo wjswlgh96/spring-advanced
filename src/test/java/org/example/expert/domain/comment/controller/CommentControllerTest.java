@@ -15,9 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,11 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import(TestWebConfig.class)
-@WebMvcTest(
-        value = CommentController.class,
-        excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebConfig.class)}
-)
+@WebMvcTest(CommentController.class)
 class CommentControllerTest {
 
     @Autowired
@@ -57,7 +50,7 @@ class CommentControllerTest {
 
         String token = jwtUtil.createToken(userId, "email", UserRole.ADMIN);
 
-        AuthUser authUser = new AuthUser(1L, "email", UserRole.ADMIN);
+        AuthUser authUser = new AuthUser(userId, "email", UserRole.ADMIN);
 
         CommentSaveRequest request = new CommentSaveRequest("contents");
         CommentSaveResponse response = new CommentSaveResponse(
@@ -86,8 +79,12 @@ class CommentControllerTest {
         //given
         long todoId = 1L;
 
+        long userId = 1L;
+
         long commentId1 = 1L;
         long commentId2 = 2L;
+
+        String token = jwtUtil.createToken(userId, "email", UserRole.ADMIN);
 
         AuthUser authUser = new AuthUser(1L, "email", UserRole.ADMIN);
         User user = User.fromAuthUser(authUser);
@@ -100,7 +97,8 @@ class CommentControllerTest {
         given(commentService.getComments(todoId)).willReturn(commentList);
 
         //when & then
-        mockMvc.perform(get("/todos/" + todoId + "/comments"))
+        mockMvc.perform(get("/todos/" + todoId + "/comments")
+                        .header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].id").value(commentId1))
